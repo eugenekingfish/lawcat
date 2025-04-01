@@ -51,6 +51,7 @@ namespace lawcat
             void operator+=(const mat<T>& other);
             mat<T> operator-(const mat<T>& other) const;
             void operator-=(const mat<T>& other);
+            bool operator==(const mat<T>& other) const;
       };
 
    template <typename T>
@@ -164,6 +165,19 @@ namespace lawcat
          for ( size_t i = 0; i < this->n_rows; ++i )
             for ( size_t j = 0; j < this->n_cols; ++j )
                this->data[i][j] -= other.data[i][j];
+      }
+
+   template <typename T>
+      bool mat<T>::operator==(const mat<T>& other) const
+      {
+         if ( this->n_cols != other.n_cols || this->n_rows != other.n_rows )
+            return false;
+
+         for ( size_t i = 0; i < n_rows; ++i )
+            for ( size_t j = 0; j < n_cols; ++j )
+               if ( this->data[i][j] != other.data[i][j] )
+                  return false;
+         return true;
       }
 }
 #endif
