@@ -6,6 +6,22 @@
 #include <source_location>
 #include <stdexcept>
 
+class dimension_mismatch_error : public std::runtime_error 
+{
+   public:
+      explicit dimension_mismatch_error(const std::string& message, const std::source_location& location = std::source_location::current())
+         : std::runtime_error(message + " at " + location.file_name() + ":" + std::to_string(location.line()) + ".") {}
+};
+
+inline void check_matrix_dimensions(const size_t& n_rows_a, const size_t& n_cols_a, const size_t& n_rows_b, const size_t& n_cols_b) 
+{
+   if ( n_rows_a != n_rows_b || n_cols_a != n_cols_b ) 
+   {
+      const std::string msg = "Cannot perform addition between a " + std::to_string(n_rows_a) + "x" + std::to_string(n_cols_a) + " matrix and a " + std::to_string(n_rows_b) + "x" + std::to_string(n_cols_b) + " matrix.";
+      throw dimension_mismatch_error(msg);
+   }
+}
+
 template <typename T>
 concept printable = requires(T value) 
 {
@@ -98,8 +114,7 @@ mat<T>::~mat()
 template <typename T>
 mat<T> mat<T>::operator+(const mat<T>& other)
 {
-   if ( other.n_rows != this->n_rows || other.n_cols != this->n_cols )
-      throw std::invalid_argument("ERROR: Matrices must have the same dimension to perform addition.");
+   check_matrix_dimensions(this->n_rows, this->n_cols, other.n_rows, other.n_cols);
 
    mat<T> out(this->n_rows, this->n_cols);
 
