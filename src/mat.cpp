@@ -47,11 +47,15 @@ namespace lawcat
 
             bool print(const std::source_location& location = std::source_location::current()) const;
 
+            // Standard operators
             mat<T> operator+(const mat<T>& other) const;
             void operator+=(const mat<T>& other);
             mat<T> operator-(const mat<T>& other) const;
             void operator-=(const mat<T>& other);
             bool operator==(const mat<T>& other) const;
+
+            // Matrix products
+            static mat<T> hadamard_product(const mat<T>& m_a, const mat<T>& m_b);
       };
 
    template <typename T>
@@ -178,6 +182,18 @@ namespace lawcat
                if ( this->data[i][j] != other.data[i][j] )
                   return false;
          return true;
+      }
+   template <typename T>
+      mat<T> mat<T>::hadamard_product(const mat<T>& m_a, const mat<T>& m_b)
+      {
+         check_matrix_dimensions(m_a.n_rows, m_a.n_cols, m_b.n_rows, m_b.n_cols);
+         mat<T> out(m_a.n_rows, m_a.n_cols);
+
+         for ( size_t i = 0; i < m_a.n_rows; ++i )
+            for ( size_t j = 0; j < m_a.n_cols; ++j )
+               out.data[i][j] = m_a.data[i][j] * m_b.data[i][j];
+
+         return out;
       }
 }
 #endif
