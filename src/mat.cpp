@@ -4,6 +4,7 @@
 #include <iostream>
 #include <concepts>
 #include <source_location>
+#include <stdexcept>
 
 template <typename T>
 concept printable = requires(T value) 
@@ -24,6 +25,7 @@ class mat
       ~mat();
 
       void fill(const T& value);
+      void set(const size_t& row, const size_t col, const T& value);
       bool print(const std::source_location& location = std::source_location::current()) const;
       mat<T> operator+(const mat<T>& other);
 };
@@ -74,6 +76,18 @@ void mat<T>::fill(const T& value)
 }
 
 template <typename T>
+void mat<T>::set(const size_t& row, const size_t col, const T& value)
+{
+   if ( row >= this->n_rows || row < 0 )
+      throw std::invalid_argument("ERROR: Row lies outside the bounds of the matrix.");
+
+   if ( col >= this->n_cols || col < 0 )
+      throw std::invalid_argument("ERROR: Column lies outside the bounds of the matrix.");
+
+   this->data[row][col] = value;
+}
+
+template <typename T>
 mat<T>::~mat()
 {
    for ( size_t i = 0; i < this->n_rows; ++i )
@@ -84,9 +98,15 @@ mat<T>::~mat()
 template <typename T>
 mat<T> mat<T>::operator+(const mat<T>& other)
 {
-   if ( other.n_rows == this->n_rows && other.n_cols == this->n_cols )
-   {
-      return 1;
-   }
+   if ( other.n_rows != this->n_rows || other.n_cols != this->n_cols )
+      throw std::invalid_argument("ERROR: Matrices must have the same dimension to perform addition.");
+
+   mat<T> out(this->n_rows, this->n_cols);
+
+   for ( size_t i = 0; i < this->n_rows; ++i )
+      for ( size_t j = 0; j < this->n_cols; ++j )
+         out.set(i, j, this->data[i][j] + other.data[i][j]);
+
+   return out;
 }
 #endif
