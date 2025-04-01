@@ -48,7 +48,9 @@ namespace lawcat
             bool print(const std::source_location& location = std::source_location::current()) const;
 
             mat<T> operator+(const mat<T>& other) const;
+            void operator+=(const mat<T>& other);
             mat<T> operator-(const mat<T>& other) const;
+            void operator-=(const mat<T>& other);
       };
 
    template <typename T>
@@ -131,6 +133,16 @@ namespace lawcat
       }
 
    template <typename T>
+      void mat<T>::operator+=(const mat<T>& other) 
+      {
+         check_matrix_dimensions(this->n_rows, this->n_cols, other.n_rows, other.n_cols);
+
+         for ( size_t i = 0; i < this->n_rows; ++i )
+            for ( size_t j = 0; j < this->n_cols; ++j )
+               this->data[i][j] += other.data[i][j];
+      }
+
+   template <typename T>
       mat<T> mat<T>::operator-(const mat<T>& other) const
       {
          check_matrix_dimensions(this->n_rows, this->n_cols, other.n_rows, other.n_cols);
@@ -142,6 +154,16 @@ namespace lawcat
                out.set(i, j, this->data[i][j] - other.data[i][j]);
 
          return out;
+      }
+
+   template <typename T>
+      void mat<T>::operator-=(const mat<T>& other) 
+      {
+         check_matrix_dimensions(this->n_rows, this->n_cols, other.n_rows, other.n_cols);
+
+         for ( size_t i = 0; i < this->n_rows; ++i )
+            for ( size_t j = 0; j < this->n_cols; ++j )
+               this->data[i][j] -= other.data[i][j];
       }
 }
 #endif
